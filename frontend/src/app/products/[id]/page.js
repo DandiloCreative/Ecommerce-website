@@ -23,8 +23,6 @@ export default function ProductDetail() {
     const [newReview, setNewReview] = useState({ rating: 5, comment: '' });
     const [showReviewForm, setShowReviewForm] = useState(false);
     const [submittingReview, setSubmittingReview] = useState(false);
-    const [similarProducts, setSimilarProducts] = useState([]);
-    const [frequentlyBought, setFrequentlyBought] = useState([]);
 
     useEffect(() => {
         fetch(`${API_URL}/products/${id}`)
@@ -46,16 +44,6 @@ export default function ProductDetail() {
                 setReviewStats(data.stats || { average: 0, count: 0 });
             })
             .catch(err => console.error('Error fetching reviews:', err));
-
-        fetch(`${API_URL}/recommendations/similar/${id}`)
-            .then(res => res.json())
-            .then(data => setSimilarProducts(data))
-            .catch(err => console.error('Error fetching similar products:', err));
-
-        fetch(`${API_URL}/recommendations/frequently-bought-together/${id}`)
-            .then(res => res.json())
-            .then(data => setFrequentlyBought(data))
-            .catch(err => console.error('Error fetching frequently bought:', err));
     }, [id]);
 
     const addToRecentlyViewed = (product) => {
@@ -128,101 +116,100 @@ export default function ProductDetail() {
         }
     };
 
+    const renderStars = (rating) => {
+        return [...Array(5)].map((_, i) => (
+            <span key={i} className={i < Math.floor(rating) ? 'text-yellow-400' : 'text-gray-300'}>★</span>
+        ));
+    };
+
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50">
+            <div className="min-h-screen bg-gray-100">
                 <Header />
-                <main className="container mx-auto px-4 py-8">
-                    <div className="animate-pulse">
-                        <div className="grid lg:grid-cols-2 gap-8">
-                            <div className="bg-gray-200 h-96 rounded-lg"></div>
-                            <div>
-                                <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
-                                <div className="h-4 bg-gray-200 rounded w-1/4 mb-6"></div>
-                                <div className="h-12 bg-gray-200 rounded w-1/3 mb-6"></div>
-                                <div className="space-y-2">
-                                    <div className="h-4 bg-gray-200 rounded"></div>
-                                    <div className="h-4 bg-gray-200 rounded"></div>
-                                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </main>
+                <div className="flex items-center justify-center h-96">
+                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent"></div>
+                </div>
             </div>
         );
     }
 
     if (!product) {
         return (
-            <div className="min-h-screen bg-gray-50">
+            <div className="min-h-screen bg-gray-100">
                 <Header />
-                <main className="container mx-auto px-4 py-16 text-center">
-                    <h1 className="text-2xl font-bold text-red-600">Product not found</h1>
+                <main className="max-w-7xl mx-auto px-4 py-16 text-center">
+                    <h1 className="text-2xl font-bold text-gray-800">Product not found</h1>
+                    <Link href="/products" className="text-cyan-600 hover:underline mt-4 inline-block">Back to Products</Link>
                 </main>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-100">
             <Header />
-            <main className="container mx-auto px-4 py-8">
-                <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-                    <div className="flex flex-col lg:flex-row gap-8">
-                        <div className="lg:w-1/2">
-                            <div className="relative">
-                                <img 
-                                    src={product.image} 
-                                    alt={product.name} 
-                                    className="w-full h-96 object-cover rounded-lg" 
-                                />
-                                <button
-                                    onClick={handleWishlist}
-                                    className={`absolute top-4 right-4 p-3 rounded-full shadow-lg transition ${
-                                        isInWishlist(product.id) 
-                                            ? 'bg-red-500 text-white' 
-                                            : 'bg-white text-gray-600 hover:bg-gray-100'
-                                    }`}
-                                >
-                                    <svg className="w-6 h-6" fill={isInWishlist(product.id) ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                    </svg>
-                                </button>
-                            </div>
+            
+            {/* Breadcrumb */}
+            <div className="bg-gray-100 border-b border-gray-200">
+                <div className="max-w-7xl mx-auto px-4 py-3">
+                    <p className="text-sm text-gray-600">
+                        <Link href="/" className="hover:underline">Home</Link>
+                        {' > '}
+                        <Link href="/products" className="hover:underline">Products</Link>
+                        {' > '}
+                        <span className="text-gray-800">{product.name}</span>
+                    </p>
+                </div>
+            </div>
+
+            <main className="max-w-7xl mx-auto px-4 py-6">
+                <div className="bg-white rounded-lg shadow-sm p-6">
+                    <div className="grid md:grid-cols-2 gap-8">
+                        {/* Left - Image */}
+                        <div className="relative">
+                            <img 
+                                src={product.image} 
+                                alt={product.name} 
+                                className="w-full h-96 object-cover rounded-lg" 
+                            />
+                            <button
+                                onClick={handleWishlist}
+                                className={`absolute top-4 right-4 p-3 rounded-full shadow-lg transition ${
+                                    isInWishlist(product.id) 
+                                        ? 'bg-red-500 text-white' 
+                                        : 'bg-white text-gray-600 hover:bg-gray-100'
+                                }`}
+                            >
+                                <svg className="w-6 h-6" fill={isInWishlist(product.id) ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                </svg>
+                            </button>
                         </div>
-                        <div className="lg:w-1/2">
-                            <div className="mb-2">
-                                <span className="text-sm text-purple-600 font-medium">{product.category_name}</span>
-                            </div>
-                            <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
+
+                        {/* Right - Details */}
+                        <div>
+                            <p className="text-sm text-cyan-600 font-medium mb-1">{product.category_name}</p>
+                            <h1 className="text-2xl font-bold text-gray-800 mb-3">{product.name}</h1>
                             
-                            <div className="flex items-center gap-4 mb-6">
-                                <div className="flex items-center">
-                                    {[...Array(5)].map((_, i) => (
-                                        <span key={i} className={`text-2xl ${
-                                            i < Math.floor(reviewStats.average) ? 'text-cyan-400' : 'text-gray-300'
-                                        }`}>
-                                            ★
-                                        </span>
-                                    ))}
-                                </div>
-                                <span className="text-lg font-medium">
-                                    {reviewStats.average} ({reviewStats.count} {reviewStats.count === 1 ? 'review' : 'reviews'})
-                                </span>
+                            <div className="flex items-center gap-2 mb-4">
+                                <div className="flex">{renderStars(reviewStats.average)}</div>
+                                <span className="text-sm text-gray-600">{reviewStats.average} ({reviewStats.count} reviews)</span>
                             </div>
                             
-                            <p className="text-4xl font-bold text-purple-600 mb-4">${product.price}</p>
+                            <p className="text-3xl font-bold text-purple-600 mb-4">${product.price}</p>
                             <p className="text-gray-600 mb-6 leading-relaxed">{product.description}</p>
                             
                             <div className="mb-6">
-                                <p className={`font-medium ${product.stock > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                    {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
-                                </p>
+                                {product.stock > 0 ? (
+                                    <p className="text-green-600 font-medium">✓ In Stock</p>
+                                ) : (
+                                    <p className="text-red-600 font-medium">✗ Out of Stock</p>
+                                )}
                             </div>
                             
+                            {/* Quantity & Add to Cart */}
                             <div className="flex items-center gap-4 mb-6">
-                                <div className="flex items-center border rounded-lg">
+                                <div className="flex items-center border border-gray-400 rounded-lg">
                                     <button
                                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
                                         className="px-4 py-2 hover:bg-gray-100 transition"
@@ -235,7 +222,7 @@ export default function ProductDetail() {
                                         max={product.stock}
                                         value={quantity}
                                         onChange={(e) => setQuantity(Math.max(1, Math.min(product.stock, parseInt(e.target.value) || 1)))}
-                                        className="w-20 p-2 text-center border-x outline-none"
+                                        className="w-16 text-center border-x border-gray-400 py-2 outline-none"
                                     />
                                     <button
                                         onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
@@ -247,91 +234,36 @@ export default function ProductDetail() {
                                 <button
                                     onClick={handleAddToCart}
                                     disabled={product.stock === 0}
-                                    className="flex-1 bg-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed font-medium"
+                                    className="flex-1 bg-cyan-400 hover:bg-cyan-500 text-gray-900 font-bold py-3 rounded-lg transition disabled:bg-gray-300"
                                 >
                                     Add to Cart
                                 </button>
                             </div>
 
-                            <div className="border-t pt-6">
-                                <h3 className="font-semibold mb-3">Features:</h3>
-                                <ul className="list-disc list-inside text-gray-600 space-y-1">
-                                    <li>High-quality materials</li>
-                                    <li>Free shipping on orders over $50</li>
-                                    <li>30-day return policy</li>
-                                    <li>24/7 customer support</li>
-                                </ul>
+                            <div className="border-t pt-4 text-sm text-gray-600">
+                                <p className="mb-1">• High-quality materials</p>
+                                <p className="mb-1">• Free shipping on orders over $50</p>
+                                <p>• 30-day return policy</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {frequentlyBought.length > 0 && (
-                    <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-                        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                            <span>🛒</span> Frequently Bought Together
-                        </h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                            {frequentlyBought.map(item => (
-                                <Link key={item.id} href={`/products/${item.id}`}>
-                                    <div className="bg-gray-50 rounded-lg p-4 hover:shadow-lg transition cursor-pointer">
-                                        <img 
-                                            src={item.image} 
-                                            alt={item.name} 
-                                            className="w-full h-32 object-cover rounded-lg mb-3" 
-                                        />
-                                        <h3 className="font-medium text-sm truncate mb-2">{item.name}</h3>
-                                        <p className="text-lg font-bold text-blue-600">${item.price}</p>
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {similarProducts.length > 0 && (
-                    <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-                        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                            <span>👀</span> Similar Products
-                        </h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                            {similarProducts.map(item => (
-                                <Link key={item.id} href={`/products/${item.id}`}>
-                                    <div className="bg-gray-50 rounded-lg overflow-hidden hover:shadow-lg transition cursor-pointer h-full flex flex-col">
-                                        <img 
-                                            src={item.image} 
-                                            alt={item.name} 
-                                            className="w-full h-40 object-cover" 
-                                        />
-                                        <div className="p-4 flex-1 flex flex-col">
-                                            <h3 className="font-medium text-sm truncate mb-1">{item.name}</h3>
-                                            <p className="text-gray-500 text-xs truncate flex-1">{item.description}</p>
-                                            <div className="flex items-center justify-between mt-2">
-                                                <span className="text-lg font-bold text-blue-600">${item.price}</span>
-                                                <span className="text-yellow-500 text-sm">★ {item.rating}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-                    <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-2xl font-bold">Customer Reviews</h2>
+                {/* Customer Reviews */}
+                <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
+                    <div className="flex justify-between items-center mb-6 pb-4 border-b">
+                        <h2 className="text-xl font-bold text-gray-800">Customer Reviews</h2>
                         <button
                             onClick={() => setShowReviewForm(!showReviewForm)}
-                            className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition"
+                            className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-medium transition"
                         >
                             Write a Review
                         </button>
                     </div>
 
                     {showReviewForm && (
-                        <form onSubmit={handleSubmitReview} className="bg-gray-50 p-6 rounded-lg mb-8">
-                            <h3 className="font-semibold mb-4">Your Review</h3>
+                        <form onSubmit={handleSubmitReview} className="bg-gray-50 p-6 rounded-lg mb-6">
+                            <h3 className="font-bold mb-4">Your Review</h3>
                             <div className="mb-4">
                                 <label className="block text-sm font-medium mb-2">Rating</label>
                                 <div className="flex gap-2">
@@ -341,7 +273,7 @@ export default function ProductDetail() {
                                             type="button"
                                             onClick={() => setNewReview({ ...newReview, rating: star })}
                                             className={`text-3xl transition ${
-                                                star <= newReview.rating ? 'text-cyan-400' : 'text-gray-300'
+                                                star <= newReview.rating ? 'text-yellow-400' : 'text-gray-300'
                                             }`}
                                         >
                                             ★
@@ -354,7 +286,7 @@ export default function ProductDetail() {
                                 <textarea
                                     value={newReview.comment}
                                     onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
-                                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-500 outline-none"
+                                    className="w-full p-3 border border-gray-400 rounded-lg focus:outline-none focus:border-cyan-500"
                                     rows="4"
                                     placeholder="Share your experience..."
                                 ></textarea>
@@ -363,14 +295,14 @@ export default function ProductDetail() {
                                 <button
                                     type="submit"
                                     disabled={submittingReview}
-                                    className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition disabled:bg-gray-400"
+                                    className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-medium transition disabled:bg-gray-300"
                                 >
                                     {submittingReview ? 'Submitting...' : 'Submit Review'}
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setShowReviewForm(false)}
-                                    className="px-6 py-2 border rounded-lg hover:bg-gray-100 transition"
+                                    className="px-6 py-2 border border-gray-400 rounded-lg hover:bg-gray-100 transition"
                                 >
                                     Cancel
                                 </button>
@@ -386,32 +318,22 @@ export default function ProductDetail() {
                         <div className="space-y-6">
                             {reviews.map((review) => (
                                 <div key={review.id} className="border-b pb-6">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-10 h-10 bg-purple-600 text-white rounded-full flex items-center justify-center font-semibold">
-                                                {review.user_name.charAt(0).toUpperCase()}
-                                            </div>
-                                            <div>
-                                                <p className="font-semibold">{review.user_name}</p>
-                                                <div className="flex items-center gap-2">
-                                                    <div className="flex">
-                                                        {[...Array(5)].map((_, i) => (
-                                                            <span key={i} className={`text-sm ${
-                                                                i < review.rating ? 'text-cyan-400' : 'text-gray-300'
-                                                            }`}>
-                                                                ★
-                                                            </span>
-                                                        ))}
-                                                    </div>
-                                                    <span className="text-sm text-gray-500">
-                                                        {new Date(review.created_at).toLocaleDateString()}
-                                                    </span>
-                                                </div>
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <div className="w-10 h-10 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold">
+                                            {review.user_name?.charAt(0).toUpperCase() || 'U'}
+                                        </div>
+                                        <div>
+                                            <p className="font-semibold text-gray-800">{review.user_name}</p>
+                                            <div className="flex items-center gap-2">
+                                                <div className="flex">{renderStars(review.rating)}</div>
+                                                <span className="text-xs text-gray-500">
+                                                    {new Date(review.created_at).toLocaleDateString()}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
                                     {review.comment && (
-                                        <p className="text-gray-700 mt-3">{review.comment}</p>
+                                        <p className="text-gray-700 mt-2 ml-13">{review.comment}</p>
                                     )}
                                 </div>
                             ))}

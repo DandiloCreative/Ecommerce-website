@@ -70,65 +70,79 @@ export default function Orders() {
         return new Date(dateString).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
+            day: 'numeric'
         });
     };
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50">
+            <div className="min-h-screen bg-gray-100">
                 <Header />
-                <main className="container mx-auto px-4 py-16 text-center">
-                    <div className="text-xl">Loading orders...</div>
-                </main>
+                <div className="flex items-center justify-center h-96">
+                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent"></div>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-100">
             <Header />
-            <main className="container mx-auto px-4 py-8">
+            
+            {/* Breadcrumb */}
+            <div className="bg-gray-100 border-b border-gray-200">
+                <div className="max-w-7xl mx-auto px-4 py-3">
+                    <p className="text-sm text-gray-600">
+                        <Link href="/" className="hover:underline">Home</Link>
+                        {' > '}
+                        <span className="text-gray-800">Your Orders</span>
+                    </p>
+                </div>
+            </div>
+
+            <main className="max-w-7xl mx-auto px-4 py-6">
+                <h1 className="text-2xl font-bold text-gray-800 mb-6">Your Orders</h1>
+
                 {searchParams.get('success') && (
                     <div className="bg-green-100 border border-green-400 text-green-800 px-4 py-3 rounded-lg mb-6">
                         Order #{searchParams.get('order')} placed successfully! Thank you for your purchase.
                     </div>
                 )}
 
-                <h1 className="text-3xl font-bold mb-8">My Orders</h1>
-
                 {!localStorage.getItem('token') ? (
-                    <div className="bg-white rounded-lg shadow-md p-12 text-center">
-                        <svg className="w-20 h-20 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <h2 className="text-xl font-semibold mb-2">Login to view your orders</h2>
+                    <div className="bg-white rounded-lg shadow-sm p-12 text-center max-w-2xl mx-auto">
+                        <div className="w-20 h-20 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                            <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <h2 className="text-xl font-bold text-gray-800 mb-2">Sign in to view your orders</h2>
                         <p className="text-gray-600 mb-6">Please sign in to see your order history.</p>
-                        <Link href="/login" className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium">
-                            Login
+                        <Link href="/login" className="inline-block bg-cyan-400 text-gray-900 font-bold px-8 py-3 rounded-lg hover:bg-cyan-500 transition">
+                            Sign In
                         </Link>
                     </div>
                 ) : orders.length === 0 ? (
-                    <div className="bg-white rounded-lg shadow-md p-12 text-center">
-                        <svg className="w-20 h-20 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                        </svg>
-                        <h2 className="text-xl font-semibold mb-2">No orders yet</h2>
+                    <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+                        <div className="w-20 h-20 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                            <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                        </div>
+                        <h2 className="text-xl font-bold text-gray-800 mb-2">No orders yet</h2>
                         <p className="text-gray-600 mb-6">Start shopping to see your orders here.</p>
-                        <Link href="/products" className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium">
+                        <Link href="/products" className="inline-block bg-cyan-400 text-gray-900 font-bold px-8 py-3 rounded-lg hover:bg-cyan-500 transition">
                             Start Shopping
                         </Link>
                     </div>
                 ) : (
                     <div className="space-y-4">
                         {orders.map(order => (
-                            <div key={order.id} className="bg-white rounded-lg shadow-md p-6">
-                                <div className="flex flex-wrap justify-between items-start mb-4 gap-4">
+                            <div key={order.id} className="bg-white rounded-lg shadow-sm p-6">
+                                <div className="flex flex-wrap justify-between items-start gap-4 mb-4">
                                     <div>
-                                        <p className="font-bold text-lg">Order #{order.id}</p>
-                                        <p className="text-gray-500 text-sm">{formatDate(order.created_at)}</p>
+                                        <p className="font-bold text-gray-800">Order #{order.id}</p>
+                                        <p className="text-sm text-gray-500">Placed on {formatDate(order.created_at)}</p>
                                     </div>
                                     <div className="flex items-center gap-3">
                                         {order.status === 'pending' && (
@@ -147,19 +161,19 @@ export default function Orders() {
                                 <div className="border-t pt-4">
                                     <div className="grid md:grid-cols-2 gap-4">
                                         <div>
-                                            <h3 className="font-semibold mb-2">Shipping Address</h3>
+                                            <h3 className="font-semibold text-sm text-gray-800 mb-1">Shipping Address</h3>
                                             <p className="text-gray-600 text-sm">{order.shipping_address}</p>
                                         </div>
                                         <div>
-                                            <h3 className="font-semibold mb-2">Payment Method</h3>
+                                            <h3 className="font-semibold text-sm text-gray-800 mb-1">Payment Method</h3>
                                             <p className="text-gray-600 text-sm">{order.payment_method}</p>
                                         </div>
                                     </div>
                                     <div className="flex justify-between items-center mt-4 pt-4 border-t">
-                                        <Link href={`/orders/${order.id}`} className="text-sm text-blue-600 hover:underline">
+                                        <Link href={`/orders/${order.id}`} className="text-cyan-600 hover:text-cyan-700 hover:underline text-sm font-medium">
                                             View order details →
                                         </Link>
-                                        <p className="text-2xl font-bold text-blue-600">${order.total.toFixed(2)}</p>
+                                        <p className="text-xl font-bold text-purple-600">${order.total.toFixed(2)}</p>
                                     </div>
                                 </div>
                             </div>

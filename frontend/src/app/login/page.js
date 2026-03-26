@@ -39,60 +39,69 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-gray-100">
-            <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
-                <div className="text-center mb-8">
-                    <Link href="/" className="text-3xl font-bold text-purple-600">
-                        ShopHub
+        <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+            <div className="max-w-md w-full">
+                {/* Logo */}
+                <div className="text-center mb-6">
+                    <Link href="/" className="text-3xl font-bold text-gray-800">
+                        <span className="text-cyan-500">Shop</span>Hub
                     </Link>
-                    <h1 className="text-2xl font-bold mt-6 mb-2">Welcome Back</h1>
-                    <p className="text-gray-600">Sign in to your account</p>
                 </div>
 
-                {error && (
-                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                        {error}
-                    </div>
-                )}
+                {/* Login Form */}
+                <div className="bg-white rounded-lg shadow-sm p-8">
+                    <h1 className="text-2xl font-bold text-gray-800 mb-6">Sign-In</h1>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Email</label>
-                        <input
-                            type="email"
-                            required
-                            className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-500 outline-none"
-                            placeholder="you@example.com"
-                            value={form.email}
-                            onChange={(e) => setForm({ ...form, email: e.target.value })}
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Password</label>
-                        <input
-                            type="password"
-                            required
-                            className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-500 outline-none"
-                            placeholder="••••••••"
-                            value={form.password}
-                            onChange={(e) => setForm({ ...form, password: e.target.value })}
-                        />
-                    </div>
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full bg-purple-600 text-white p-3 rounded-lg hover:bg-purple-700 transition disabled:bg-gray-400 font-medium"
-                    >
-                        {loading ? 'Signing in...' : 'Sign In'}
-                    </button>
-                </form>
+                    {error && (
+                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 text-sm">
+                            {error}
+                        </div>
+                    )}
 
-                <p className="mt-6 text-center text-gray-600">
-                    Don't have an account?{' '}
-                    <Link href="/register" className="text-purple-600 hover:underline font-medium">
-                        Sign up
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Email</label>
+                            <input
+                                type="email"
+                                required
+                                className="w-full p-2 border border-gray-400 rounded-lg focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
+                                placeholder="Enter your email"
+                                value={form.email}
+                                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Password</label>
+                            <input
+                                type="password"
+                                required
+                                className="w-full p-2 border border-gray-400 rounded-lg focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
+                                placeholder="Enter your password"
+                                value={form.password}
+                                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full bg-cyan-400 hover:bg-cyan-500 text-gray-900 font-bold py-2 rounded-lg transition disabled:bg-gray-300"
+                        >
+                            {loading ? 'Signing in...' : 'Sign In'}
+                        </button>
+                    </form>
+
+                    <p className="text-xs text-gray-600 mt-4 text-center">
+                        By signing in, you agree to ShopHub's <a href="#" className="text-cyan-600 hover:underline">Conditions of Use</a> and <a href="#" className="text-cyan-600 hover:underline">Privacy Notice</a>.
+                    </p>
+                </div>
+
+                {/* New Customer */}
+                <div className="mt-6 bg-gray-200 rounded-lg p-4 text-center">
+                    <p className="text-sm text-gray-600 mb-2">New to ShopHub?</p>
+                    <Link href="/register" className="block w-full border border-gray-400 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 rounded-lg transition">
+                        Create your ShopHub account
                     </Link>
-                </p>
+                </div>
             </div>
         </div>
     );
